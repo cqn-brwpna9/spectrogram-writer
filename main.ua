@@ -1,8 +1,21 @@
 S ~ "git: github.com/cqn-brwpna9/uiua-synth"
-SCALE!   ← ^0+⊙⇡            # for making scales [a₁ a₁+1 ... a₁+a₂]
-LOGSCALE ← SCALE!(S~TOFREQ) # a log scale 
-LINSCALE ← SCALE!(∘)        # a linear scale
-ROW!     ← /+S~FREQSYN 1×˜^0⊏0⊙:△.
-LOGROW   ← ROW!(LOGSCALE)
-LINROW   ← ROW!(LINSCALE)
-LINROW [1 0 1 0 1] 440
+IMAGE ← [
+  1_0_1_0_1_0
+  0_1_0_1_1_0
+  0_1_1_0_0_0
+  0_1_0_1_0_0
+  1_0_0_0_1_0
+]
+MinFreq          ← ⁿ 2 8   # hz
+MaxFreq          ← ⁿ 2 128 # hz
+SoundLength      ← 1       # seconds
+Length           ← ⊙◌°⊟△ IMAGE
+Width            ← ◌°⊟△ IMAGE
+SamplesPerColumn ← ⁅÷ Width ×SoundLength&asr  # how many samples for each row
+HzPerRow         ← ⁅÷ Length -MinFreq MaxFreq # what size sound band foreach pixels
+PixRow           ← [⍥(+HzPerRow.)Width MinFreq]
+Spectrogram ← (
+  IMAGE
+  ⍉   # get rows in the right place
+  ≡() # generate times for 
+)

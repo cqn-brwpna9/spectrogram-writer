@@ -3,13 +3,21 @@ S ~ "gh: cqn-brwpna9/uiua-synth"
   ToFreq    ← S.ToFreq
   Syn       ← S.FreqSyn
   Normalize ← S.Normalize
-MIN       ← ¯5
-MAX       ← 20
-LEN       ← 0.05
-MakeText  ← ⁅layout ×₂-MIN MAX
-MakeFreqs ← (
-  ⇌¬<₁+⧋/+⧋=˜⊟0-₁⊢⟜⇡⊸△    # put a line below(and to the right) of the array so somthing is always being played
-  ⊜□°⊟⍜⊣(⍜(+MIN)ToFreq)⧋⊚ # make the diffrent lists of frequencies that need to be played
+~Cfg {Min Max Len Text Fname}
+N! ←^ $"⨬(⋕°□⊡+1)⋅⋅_⊸=¯1"°¤°□
+T! ←^ $"⨬(°□⊡+1)⋅⋅_⊸=¯1"°¤°□
+ParseArgs ← (
+  ⍡(Cfg ¯5 20 0.05 "Hello" "out.wav" ◌⍩°{∘}
+  | ⬚¯1≡⊚⊸≡⌟= {"--min" "--max" "--len" "--text" "--fname"}
+    °⊟₅⧋°¤
+    Cfg⊓⌟(N!¯5|N!20|N!0.05|T!"Hello"|T!"out.wav")
+  )
 )
-GenSound ← Normalize/⊂≡◇(/+Syn LEN)
-&apGenSound MakeFreqs MakeText "uhhhhhh. thoughts"
+MakeText ← ⁅layout ×₂-⊸⊃(Cfg.Min|Cfg.Max|Cfg.Text)
+MakeFreqs ← (
+  ⇌¬<₁+⧋/+⧋=˜⊟0-₁⊢⟜⇡⊸△      # put a line below(and to the right) of the array so somthing is always being played
+  ⊜□°⊟⍜⊣⍜+ToFreq⊓⧋⊚⊸Cfg.Min # make the diffrent lists of frequencies that need to be played
+)
+GenSound ← Normalize/⊂˜≡◇(/+Syn)⊙⊸Cfg.Len
+GenSound MakeFreqs MakeText ParseArgs &args
+˜&fwa⊓(audio "wav" &asr)Cfg.Fname
